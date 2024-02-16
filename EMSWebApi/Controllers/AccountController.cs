@@ -17,15 +17,15 @@ namespace EMSWebApi.Controllers
 
 
         [HttpPost("signup")]
-        public IActionResult SignUp(Register register)
+        public async Task<IActionResult> SignUp(Register register)
         {
             if (ModelState.IsValid)
             {
-                var result = _accountRepository.Signup(register);
+                var result = await _accountRepository.Signup(register);
 
-                if (result.Result != null)
+                if (result != null)
                 {
-                    if (result.Result.IsSuccess)
+                    if (result.IsSuccess)
                     {
                         return Ok(new { Message = "Registration successful" });
                     }
@@ -37,19 +37,19 @@ namespace EMSWebApi.Controllers
 
 
         [HttpPost("login")]
-        public IActionResult Login(Login login)
+        public async Task<IActionResult> Login(Login login)
         {
-            var result = _accountRepository.Login(login);
+            var result = await _accountRepository.Login(login);
 
             if (result != null)
             {
-                if (result.Result.IsSuccess)
+                if (result.IsSuccess)
                 {
                     return Ok(new
                     {
-                        result.Result.Token,
-                        result.Result.Username,
-                        result.Result.Role
+                        result.Token,
+                        result.Username,
+                        result.Role
                     });
                 }
 

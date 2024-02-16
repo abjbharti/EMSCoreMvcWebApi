@@ -13,12 +13,10 @@ namespace EMSWebApi.Controllers
     public class AdminController : Controller
     {
         public IGenericRepository<EmployeeDetail> _genericRepository;
-        public ApplicationDbContext _dbContext;
-
+        
         public AdminController(IGenericRepository<EmployeeDetail> genericRepository, ApplicationDbContext dbContext)
         {
             _genericRepository = genericRepository;
-            _dbContext = dbContext;
         }
 
 
@@ -71,13 +69,13 @@ namespace EMSWebApi.Controllers
                 throw new ArgumentNullException(nameof(employeeDetail));
             }
 
-            var employee = await _dbContext.EmployeeDetails.FindAsync(employeeDetail.Id);
+            var employee = await _genericRepository.GetById(employeeDetail.Id);
 
             if (employee != null)
             {
                 employee.Name = employeeDetail.Name;
                 employee.Department = employeeDetail.Department;
-                await _dbContext.SaveChangesAsync();
+                await _genericRepository.Update(employee);
                 return Ok(employee);
             }
 
@@ -88,12 +86,11 @@ namespace EMSWebApi.Controllers
         [HttpDelete("DeleteEmployee/{id:guid}", Name = "DeleteEmployee")]
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
-            var employee = await _dbContext.EmployeeDetails.FindAsync(id);
+           var employee = await _genericRepository.GetById(id);
 
             if (employee != null)
             {
-                _dbContext.EmployeeDetails.Remove(employee);
-                await _dbContext.SaveChangesAsync();
+                await _genericRepository.Delete(id);
                 return Ok(employee);
             }
 

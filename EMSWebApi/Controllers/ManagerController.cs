@@ -85,12 +85,12 @@ namespace EMSWebApi.Controllers
                 throw new ArgumentNullException(nameof(addFeedbackByManager));
             }
 
-            var employee = await _dbContext.EmployeeDetails.FindAsync(id);
+            var employee = await _genericRepository.GetById(id);
 
             if (employee != null)
             {
                 employee.Feedback = addFeedbackByManager.Feedback;
-                await _dbContext.SaveChangesAsync();
+                await _genericRepository.Update(employee);
                 return Ok(employee);
             }
 
